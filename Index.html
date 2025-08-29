@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Knowledge Base</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for scrollbar hiding */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen antialiased text-gray-900">
+
+    <!-- Top bar with a subtle glass effect -->
+    <nav class="fixed top-0 left-0 w-full z-10 bg-white/50 backdrop-blur-md shadow-sm">
+        <div id="category-bar" class="container mx-auto px-4 py-3 flex overflow-x-auto space-x-6 scrollbar-hide">
+            <!-- Category buttons will be injected here by JavaScript -->
+        </div>
+    </nav>
+
+    <!-- Main content area -->
+    <main class="container mx-auto px-4 pt-20 pb-8">
+        <div id="articles-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Article cards will be injected here by JavaScript -->
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Data structure for all legal articles
+            const articles = [
+                {
+                    id: 'litigation-abuse',
+                    category: 'Litigation Abuse',
+                    title: 'Litigation Abuse as a Form of Domestic Violence',
+                    content: `
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Domestic violence survivors are most at risk when attempting to leave an abusive relationship. Without effective intervention in domestic abuse, the violence often increases in frequency and severity over time.</p>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Domestic violence survivors who enter the family or civil court systems seeking protection often face ongoing abuse in the form of litigation abuse. This is the use of legal or bureaucratic procedures by abusive partners to continue to attack, harass, intimidate, coercively control, or maintain contact with their former partners through the litigation system.</p>
+                        <p class="text-sm text-gray-700 leading-relaxed">This abuse manifests through various tactics: exerting power over victims, forcing them to have contact, financially burdening them with excessive discovery and litigation, degrading and insulting them in legal papers, unduly delaying process and final resolution of important issues, or dissuading them from pursuing legal protection.</p>
+                    `,
+                },
+                {
+                    id: 'social-manipulation',
+                    category: 'Social & Psychological Concepts',
+                    title: 'Social Manipulation',
+                    content: `
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">In the context of social manipulation, perpetrators and more specifically recognize the risk of prosecution and resort to physical violence only as a last resort. An effective aggressor excels at maintaining distance from their opponent, accurately assessing the likelihood of retaliation, and avoiding counterattacks to minimize risks—e.g., a restraining order. Indirect violence, when successful, is highly effective and leaves the perpetrator unidentified.</p>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Indirect violence is defined as ‘social manipulation,’ attacking a victim not directly, but circuitously, thereby remaining unidentified and avoiding counterattack by manipulating others such as a judge or law enforcement to attack or harass the victim, excluding an individual from the social group, spreading malicious rumors, etc.</p>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">See also Psychological coercion Chambers v. State of Florida, 309 U.S. 227, 238–39, 60 S. Ct. 472, 84 L. Ed. 716 (1940).</p>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">See also Gaslighting a “form of psychological abuse in which false information is presented with the intent of making a victim doubt his or her own memory and perception,” Harper v. Lugbauer, No. C 11-01306 JW, 2012 WL 734167, at *2 (N.D. Cal. Mar. 6, 2012).</p>
+                        <p class="text-sm text-gray-700 leading-relaxed">Furthermore, Gabriel’ testimony indicated his vested interest in manipulating discourse himself as a victim while casting me as as a violent perpetrator (§ 611 of the Federal Rules of Evidence). The testimony leans entirely on emotional appeals and sensational language, rather than objective facts, which is an intentional effort to manipulate the audience’s emotions instead of providing a credible account of events.</p>
+                    `,
+                },
+                {
+                    id: 'coercion',
+                    category: 'Social & Psychological Concepts',
+                    title: 'Aggressive Behavior and Coercion',
+                    content: `
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Aggressive behavior takes many forms and evolves over the course of life, becoming more sophisticated as individuals develop verbal and social skills. Verbal aggression, for instance, leverages language not only for communication but also for harm, such as through insults, threats, or manipulation. As social skills advance, aggression often shifts to more covert and insidious forms, commonly referred to as indirect aggression or social manipulation. This type of aggression involves harming a target indirectly, often by influencing a third party to act against the individual or by employing rational-appearing justifications to maintain anonymity and avoid retaliation.</p>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">The primary aggressor in same-sex contexts demonstrates that covert forms of aggression, such as indirect manipulative and rational-appearing behaviors, are more prevalent than overt aggression. Coercion and lack of responsiveness present a false perception of aggression that is influenced by the context of the action, with defensive use of coercion being rated as less aggressive than offensive use. A reconceptualization of aggression based on coercive power distinguishes between initiated harm-doing actions and retaliatory behaviors, providing a clearer understanding of aggressive behaviors.</p>
+                    `,
+                },
+                {
+                    id: 'due-process',
+                    category: 'Due Process & Constitutional Protections',
+                    title: 'Due Process & Constitutional Protections',
+                    content: `
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">The Due Process Clause mandates that state action, whether carried out by one agency or another, must align with the fundamental principles of liberty and justice that underpin our civil and political institutions. It is challenging to envision methods more egregious to the sense of justice than those employed to extract confessions from these petitioners, and the use of these confessions as the basis for conviction and sentencing constitutes a clear denial of due process.</p>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">A defendant cannot be constitutionally convicted if law enforcement officers dealt unfairly with them at any stage before or after commencement of proceedings. The law itself may appear fair on its face; however if applied or administered by public authority with malice or bias—resulting in unjust discrimination between individuals under similar circumstances—it constitutes a violation.</p>
+                    `,
+                },
+                {
+                    id: 'probable-cause',
+                    category: 'Due Process & Constitutional Protections',
+                    title: 'Probable Cause Did Not Exist',
+                    content: `
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Mr. Carlon’s accusations are purely hypothetical at this point and did not have standing. An indication of procedural errors in connection with the attempt to support the defense of invidious prosecution. In support of that defense, defendants' offer of proof, reasonably construed, was to the effect that, I have been active in protesting against domestic violence and...had been subjected to personal harassment by the police, acting at the instigation of the [accuser]; and that, because of, and solely because of, their vigorous use of their First Amendment rights to protest the [abuse] of the [abuser]... they and they alone, had been singled out for prosecution. See Also...</p>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Where the legislature fails to provide minimal guidelines to govern law enforcement, a criminal statute may be unconstitutionally vague under the Fifth Amendment Due Process Clause in that it permits a standardless sweep that allows policemen, prosecutors, and juries to pursue their personal predilections.</p>
+                    `,
+                },
+                {
+                    id: 'brady-violation',
+                    category: 'Legal Citations & Authorities',
+                    title: 'Brady v. Maryland, 373 U.S. 83 (1963)',
+                    content: `
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">The suppression of evidence favorable to the accused violates due process if the evidence is material to either guilt or punishment, regardless of whether the prosecutor acted in good faith or bad faith. The purpose of the Brady rule is to guarantee the defendant a fair trial by ensuring that all relevant evidence, whether it pertains to guilt or innocence, is presented to allow the fact-finder to reach an impartial verdict.</p>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4"><strong>A. “Favorable” Evidence:</strong> The Brady disclosure duty is triggered by an initial determination that the government possesses evidence “favorable” to the accused. Favorable evidence includes both exculpatory evidence, which negates guilt, and impeaching evidence. Both exculpatory and impeachment evidence are treated equally under the Brady doctrine.</p>
+                    `,
+                },
+                {
+                    id: 'ada-rights',
+                    category: 'Americans with Disabilities Act',
+                    title: 'The Americans with Disabilities Act',
+                    content: `
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">The Legislature finds and declares that it is the right of every person regardless of actual or perceived disability, gender, gender identity, gender expression, nationality, race or ethnicity, religion, sexual orientation, or association with a person or group with these actual or perceived characteristics, to be secure and protected from fear, intimidation, and physical harm caused by the activities of violent groups and individuals.</p>
+                        <p class="text-sm text-gray-700 leading-relaxed">The ADA's public accommodations provisions are contained in title III of that law ( 42 U.S.C. §§ 12181- 12189). This part of the ADA prohibits, among other things, the "failure to remove architectural barriers . . . in existing facilities . . . where such removal is readily achievable." ( 42 U.S.C. § 12182(b)(2)(A)(iv).) Intentional discrimination need not be shown to establish a violation of the ADA's access requirements.</p>
+                    `,
+                },
+                {
+                    id: 'family-code',
+                    category: 'Legal Citations & Authorities',
+                    title: 'Family Code Section 6320, subdivision (a)',
+                    content: `
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">“disturbing the peace of the other party” based on the totality of the circumstances, destroys the mental or emotional calm of the other party. This conduct may be committed... indirectly... including coercive control, that in purpose or effect unreasonably interferes with a person's free will and personal liberty.</p>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-sm text-gray-700">
+                            <li>Isolating from friends, relatives, or other sources of support.</li>
+                            <li>Depriving of basic necessities.</li>
+                            <li>Controlling, regulating, or monitoring the other party's movements, communications, daily behavior, finances, economic resources, or access to services.</li>
+                        </ul>
+                    `,
+                },
+            ];
+
+            const categories = ['All', ...new Set(articles.map(article => article.category))];
+            let activeCategory = 'All';
+
+            const categoryBar = document.getElementById('category-bar');
+            const articlesContainer = document.getElementById('articles-container');
+
+            function renderCategories() {
+                categoryBar.innerHTML = categories.map(category => `
+                    <button
+                        class="flex-shrink-0 py-2 px-4 rounded-full font-medium transition-colors duration-200
+                        ${activeCategory === category
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-600 hover:bg-gray-200'
+                        }"
+                        data-category="${category}"
+                    >
+                        ${category}
+                    </button>
+                `).join('');
+
+                document.querySelectorAll('#category-bar button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        activeCategory = e.target.dataset.category;
+                        renderCategories();
+                        renderArticles();
+                    });
+                });
+            }
+
+            function renderArticles() {
+                const filteredArticles = activeCategory === 'All'
+                    ? articles
+                    : articles.filter(article => article.category === activeCategory);
+                
+                if (filteredArticles.length === 0) {
+                    articlesContainer.innerHTML = `
+                        <div class="col-span-full text-center py-10 text-gray-500">
+                            No articles found for this category.
+                        </div>
+                    `;
+                    return;
+                }
+
+                articlesContainer.innerHTML = filteredArticles.map(article => `
+                    <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between
+                                 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                        <div>
+                            <span class="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-2 block">
+                                ${article.category}
+                            </span>
+                            <h2 class="text-xl font-bold text-gray-800 mb-3">${article.title}</h2>
+                            <div class="text-gray-700">
+                                ${article.content}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Initial render
+            renderCategories();
+            renderArticles();
+        });
+    </script>
+
+</body>
+</html>
