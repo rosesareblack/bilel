@@ -3,192 +3,616 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legal Knowledge Base</title>
-    <!-- Tailwind CSS via CDN -->
+    <title>Cosmic Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inter font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- JSZip and FileSaver for client-side zipping and downloading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
+        /*
+         * Shadcn-inspired styling with custom glassmorphism for icons:
+         * - Simplified dark color palette.
+         * - Emphasis on clean, subtle borders and shadows.
+         * - Consistent spacing and rounded corners.
+         */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #09090b; /* A standard shadcn dark background color */
         }
-        /* Custom styles for scrollbar hiding */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
+
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
         }
-        .scrollbar-hide {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
+
+        @keyframes twinkle {
+            0%, 100% {
+                transform: scale(0.5);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .star-sm {
+            width: 1px;
+            height: 1px;
+            animation-duration: 2s;
+        }
+
+        .star-md {
+            width: 2px;
+            height: 2px;
+            animation-duration: 3s;
+        }
+
+        .star-lg {
+            width: 3px;
+            height: 3px;
+            animation-duration: 4s;
+        }
+
+        /* Shadcn-style components */
+        .shadcn-card {
+            background-color: #18181b; /* card background */
+            border: 1px solid #27272a; /* border color */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .shadcn-input {
+            background-color: #18181b; /* input background */
+            border: 1px solid #27272a; /* input border */
+            color: #e4e4e7; /* foreground text color */
+        }
+
+        .shadcn-button-primary {
+            background-color: #4f46e5; /* primary button background */
+            color: #ffffff; /* primary button foreground */
+            border: none;
+        }
+        .shadcn-button-primary:hover {
+            background-color: #4338ca; /* darker hover state */
+        }
+
+        .shadcn-button-ghost {
+            background-color: transparent;
+            color: #a1a1aa; /* muted foreground */
+            border: 1px solid #27272a;
+        }
+        .shadcn-button-ghost:hover {
+            background-color: #18181b;
+        }
+
+        .chat-bubble-start {
+            background-color: #18181b;
+            color: #e4e4e7;
+            border: 1px solid #27272a;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-bubble-end {
+            background-color: #4f46e5;
+            color: #ffffff;
+            border: 1px solid #4f46e5;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .loading-dots span {
+            animation: blink 1.4s infinite;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        /* Custom glass effect for icons and now the chat bar */
+        .glass-icon {
+            background: rgba(46, 46, 46, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .glass-icon:hover {
+            background: rgba(46, 46, 46, 0.6);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-bar {
+            background: rgba(24, 24, 27, 0.4); /* glass background */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(39, 39, 42, 0.6);
+            box-shadow: 0 0 32px rgba(255, 215, 0, 0.4); /* Yellow glow */
+            transition: box-shadow 0.3s ease-in-out, background 0.3s ease-in-out;
+        }
+        
+        /* Add a hover effect for a more dynamic feel */
+        .glass-bar:hover {
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); /* Stronger glow on hover */
+        }
+
+        /* Styling for the standout GitHub icon with the new purple glow */
+        .github-icon {
+            background: rgba(138, 43, 226, 0.6); /* Purple background */
+            border: 1px solid rgba(138, 43, 226, 0.8);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); /* Purple glowing effect */
+            animation: pulse-glow-purple 2s infinite; /* Changed animation name */
+        }
+
+        .github-icon:hover {
+            background: rgba(138, 43, 226, 0.8);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.8);
+        }
+
+        /* New keyframes for purple glow */
+        @keyframes pulse-glow-purple {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(138, 43, 226, 0.8);
+            }
+        }
+
+        /* Faux side panel with glass effect */
+        .side-panel {
+            background: rgba(24, 24, 27, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(39, 39, 42, 0.6);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .side-panel.open {
+            transform: translateX(0);
         }
     </style>
 </head>
-<body class="bg-white min-h-screen antialiased text-gray-900">
+<body class="bg-[#09090b] text-white flex flex-col items-center min-h-screen relative overflow-hidden">
 
-    <!-- Top bar with a subtle glass effect -->
-    <nav class="fixed top-0 left-0 w-full z-10 bg-white/50 backdrop-blur-md shadow-sm">
-        <div id="category-bar" class="container mx-auto px-4 py-3 flex overflow-x-auto space-x-6 scrollbar-hide">
-            <!-- Category buttons will be injected here by JavaScript -->
-        </div>
-    </nav>
+    <!-- Stars in the background -->
+    <div id="stars-container" class="fixed inset-0 z-0"></div>
 
-    <!-- Main content area -->
-    <main class="container mx-auto px-4 pt-20 pb-8">
-        <div id="articles-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Article cards will be injected here by JavaScript -->
+    <!-- Side panel for history -->
+    <div id="history-panel" class="side-panel fixed inset-y-0 left-0 w-64 z-40 p-6 flex flex-col">
+        <h2 class="text-xl font-bold mb-4">Chat History</h2>
+        <ul id="history-list" class="flex-1 overflow-y-auto space-y-2 text-sm text-gray-300">
+            <li class="p-2 rounded-lg hover:bg-[#27272a] cursor-pointer">Start a new chat...</li>
+            <li class="p-2 rounded-lg hover:bg-[#27272a] cursor-pointer">Last week's project planning</li>
+            <li class="p-2 rounded-lg hover:bg-[#27272a] cursor-pointer">Brainstorming session</li>
+            <li class="p-2 rounded-lg hover:bg-[#27272a] cursor-pointer">Query about APIs</li>
+        </ul>
+    </div>
+
+    <!-- Icon bar on the left side -->
+    <div class="fixed top-1/2 left-4 transform -translate-y-1/2 z-40 flex flex-col space-y-4">
+        <!-- Menu button to toggle history panel -->
+        <button id="menu-button" class="p-2 w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full text-white text-xl glass-icon">
+            <i class="fas fa-bars"></i>
+        </button>
+        <!-- Plus button for file upload -->
+        <button id="plus-button" class="p-2 w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full text-white text-xl glass-icon">
+            <i class="fas fa-plus"></i>
+        </button>
+        <!-- Microphone button -->
+        <button id="mic-button" class="p-2 w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full text-white text-xl glass-icon">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <!-- Standout GitHub button -->
+        <a href="https://github.com" target="_blank" class="p-2 w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full text-white text-xl github-icon">
+            <i class="fab fa-github"></i>
+        </a>
+        <!-- Download button -->
+        <button id="download-button" class="p-2 w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full text-white text-xl glass-icon">
+            <i class="fas fa-download"></i>
+        </button>
+    </div>
+
+    <div class="z-10 w-full max-w-2xl h-screen flex flex-col">
+        
+        <!-- Header (simplified) -->
+        <div class="fixed top-0 left-0 right-0 z-20 flex justify-center p-4">
+            <div class="shadcn-card rounded-full px-6 py-2 flex items-center justify-center space-x-4">
+                <h1 class="text-sm md:text-md font-semibold text-gray-200">Cosmic Chat</h1>
+            </div>
         </div>
-    </main>
+
+        <!-- Chat messages container -->
+        <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-4 pt-20 pb-36">
+            <!-- Initial example chat bubbles -->
+            <div class="flex justify-start">
+                <div class="chat-bubble-start p-3 rounded-xl max-w-[75%]">
+                    <p>Hello, this is a mockup of a futuristic chat interface. How can I help you today?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating prompt suggestions -->
+        <div class="fixed bottom-24 left-0 right-0 z-20 flex justify-center py-2 px-4">
+            <div class="grid grid-cols-2 gap-2 max-w-sm">
+                <button class="prompt-suggestion px-4 py-2 text-sm whitespace-nowrap shadcn-button-ghost transition-colors rounded-lg">
+                    What is `git commit`?
+                </button>
+                <button class="prompt-suggestion px-4 py-2 text-sm whitespace-nowrap shadcn-button-ghost transition-colors rounded-lg">
+                    How do I `git push`?
+                </button>
+                <button class="prompt-suggestion px-4 py-2 text-sm whitespace-nowrap shadcn-button-ghost transition-colors rounded-lg">
+                    Explain `git rebase`
+                </button>
+                <button class="prompt-suggestion px-4 py-2 text-sm whitespace-nowrap shadcn-button-ghost transition-colors rounded-lg">
+                    Help me with `git status`
+                </button>
+            </div>
+        </div>
+        
+        <!-- Message input area with glassmorphism styling -->
+        <div class="fixed bottom-0 left-0 right-0 z-30 flex justify-center p-4">
+            <div class="glass-bar rounded-full px-3 py-2 flex items-center space-x-3 w-full max-w-2xl">
+                <!-- Input and "DeepSearch" / "Think" buttons -->
+                <div class="flex-1 flex items-center space-x-2 rounded-full px-2">
+                    <input type="text" id="message-input" class="flex-1 p-3 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-0" placeholder="Type your message..." disabled>
+                    <button id="think-button" class="flex-shrink-0 px-4 py-2 text-white bg-transparent text-sm font-semibold rounded-full hover:bg-gray-700 transition-colors">
+                        <span id="think-text">✨Think</span>
+                    </button>
+                    <button id="deep-search-button" class="flex-shrink-0 p-2 text-white hover:bg-gray-700 rounded-full transition-colors">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden modal for file upload -->
+    <div id="file-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center">
+        <div class="bg-[#18181b] p-6 rounded-xl w-80 text-center relative shadow-xl border border-[#27272a]">
+            <button id="close-modal" class="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-lg font-bold text-white mb-4">File Upload</h2>
+            <p class="text-gray-400 mb-6">File upload functionality would be implemented here.</p>
+            <input type="file" class="text-white border border-gray-600 rounded-lg p-2 w-full">
+        </div>
+    </div>
 
     <script>
+        // JavaScript for interactivity
         document.addEventListener('DOMContentLoaded', () => {
+            const plusButton = document.getElementById('plus-button');
+            const fileModal = document.getElementById('file-modal');
+            const closeModal = document.getElementById('close-modal');
+            const messageInput = document.getElementById('message-input');
+            const chatBox = document.getElementById('chat-box');
+            const starsContainer = document.getElementById('stars-container');
+            const promptSuggestions = document.querySelectorAll('.prompt-suggestion');
+            const micButton = document.getElementById('mic-button');
+            const thinkButton = document.getElementById('think-button');
+            const deepSearchButton = document.getElementById('deep-search-button');
+            const downloadButton = document.getElementById('download-button');
+            const menuButton = document.getElementById('menu-button');
+            const historyPanel = document.getElementById('history-panel');
 
-            // Data structure for all legal articles
-            const articles = [
-                {
-                    id: 'litigation-abuse',
-                    category: 'Litigation Abuse',
-                    title: 'Litigation Abuse as a Form of Domestic Violence',
-                    content: `
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Domestic violence survivors are most at risk when attempting to leave an abusive relationship. Without effective intervention in domestic abuse, the violence often increases in frequency and severity over time.</p>
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Domestic violence survivors who enter the family or civil court systems seeking protection often face ongoing abuse in the form of litigation abuse. This is the use of legal or bureaucratic procedures by abusive partners to continue to attack, harass, intimidate, coercively control, or maintain contact with their former partners through the litigation system.</p>
-                        <p class="text-sm text-gray-700 leading-relaxed">This abuse manifests through various tactics: exerting power over victims, forcing them to have contact, financially burdening them with excessive discovery and litigation, degrading and insulting them in legal papers, unduly delaying process and final resolution of important issues, or dissuading them from pursuing legal protection.</p>
-                    `,
-                },
-                {
-                    id: 'social-manipulation',
-                    category: 'Social & Psychological Concepts',
-                    title: 'Social Manipulation',
-                    content: `
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">In the context of social manipulation, perpetrators and more specifically recognize the risk of prosecution and resort to physical violence only as a last resort. An effective aggressor excels at maintaining distance from their opponent, accurately assessing the likelihood of retaliation, and avoiding counterattacks to minimize risks—e.g., a restraining order. Indirect violence, when successful, is highly effective and leaves the perpetrator unidentified.</p>
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Indirect violence is defined as ‘social manipulation,’ attacking a victim not directly, but circuitously, thereby remaining unidentified and avoiding counterattack by manipulating others such as a judge or law enforcement to attack or harass the victim, excluding an individual from the social group, spreading malicious rumors, etc.</p>
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">See also Psychological coercion Chambers v. State of Florida, 309 U.S. 227, 238–39, 60 S. Ct. 472, 84 L. Ed. 716 (1940).</p>
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">See also Gaslighting a “form of psychological abuse in which false information is presented with the intent of making a victim doubt his or her own memory and perception,” Harper v. Lugbauer, No. C 11-01306 JW, 2012 WL 734167, at *2 (N.D. Cal. Mar. 6, 2012).</p>
-                        <p class="text-sm text-gray-700 leading-relaxed">Furthermore, Gabriel’ testimony indicated his vested interest in manipulating discourse himself as a victim while casting me as as a violent perpetrator (§ 611 of the Federal Rules of Evidence). The testimony leans entirely on emotional appeals and sensational language, rather than objective facts, which is an intentional effort to manipulate the audience’s emotions instead of providing a credible account of events.</p>
-                    `,
-                },
-                {
-                    id: 'coercion',
-                    category: 'Social & Psychological Concepts',
-                    title: 'Aggressive Behavior and Coercion',
-                    content: `
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Aggressive behavior takes many forms and evolves over the course of life, becoming more sophisticated as individuals develop verbal and social skills. Verbal aggression, for instance, leverages language not only for communication but also for harm, such as through insults, threats, or manipulation. As social skills advance, aggression often shifts to more covert and insidious forms, commonly referred to as indirect aggression or social manipulation. This type of aggression involves harming a target indirectly, often by influencing a third party to act against the individual or by employing rational-appearing justifications to maintain anonymity and avoid retaliation.</p>
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">The primary aggressor in same-sex contexts demonstrates that covert forms of aggression, such as indirect manipulative and rational-appearing behaviors, are more prevalent than overt aggression. Coercion and lack of responsiveness present a false perception of aggression that is influenced by the context of the action, with defensive use of coercion being rated as less aggressive than offensive use. A reconceptualization of aggression based on coercive power distinguishes between initiated harm-doing actions and retaliatory behaviors, providing a clearer understanding of aggressive behaviors.</p>
-                    `,
-                },
-                {
-                    id: 'due-process',
-                    category: 'Due Process & Constitutional Protections',
-                    title: 'Due Process & Constitutional Protections',
-                    content: `
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">The Due Process Clause mandates that state action, whether carried out by one agency or another, must align with the fundamental principles of liberty and justice that underpin our civil and political institutions. It is challenging to envision methods more egregious to the sense of justice than those employed to extract confessions from these petitioners, and the use of these confessions as the basis for conviction and sentencing constitutes a clear denial of due process.</p>
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">A defendant cannot be constitutionally convicted if law enforcement officers dealt unfairly with them at any stage before or after commencement of proceedings. The law itself may appear fair on its face; however if applied or administered by public authority with malice or bias—resulting in unjust discrimination between individuals under similar circumstances—it constitutes a violation.</p>
-                    `,
-                },
-                {
-                    id: 'probable-cause',
-                    category: 'Due Process & Constitutional Protections',
-                    title: 'Probable Cause Did Not Exist',
-                    content: `
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Mr. Carlon’s accusations are purely hypothetical at this point and did not have standing. An indication of procedural errors in connection with the attempt to support the defense of invidious prosecution. In support of that defense, defendants' offer of proof, reasonably construed, was to the effect that, I have been active in protesting against domestic violence and...had been subjected to personal harassment by the police, acting at the instigation of the [accuser]; and that, because of, and solely because of, their vigorous use of their First Amendment rights to protest the [abuse] of the [abuser]... they and they alone, had been singled out for prosecution. See Also...</p>
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">Where the legislature fails to provide minimal guidelines to govern law enforcement, a criminal statute may be unconstitutionally vague under the Fifth Amendment Due Process Clause in that it permits a standardless sweep that allows policemen, prosecutors, and juries to pursue their personal predilections.</p>
-                    `,
-                },
-                {
-                    id: 'brady-violation',
-                    category: 'Legal Citations & Authorities',
-                    title: 'Brady v. Maryland, 373 U.S. 83 (1963)',
-                    content: `
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">The suppression of evidence favorable to the accused violates due process if the evidence is material to either guilt or punishment, regardless of whether the prosecutor acted in good faith or bad faith. The purpose of the Brady rule is to guarantee the defendant a fair trial by ensuring that all relevant evidence, whether it pertains to guilt or innocence, is presented to allow the fact-finder to reach an impartial verdict.</p>
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4"><strong>A. “Favorable” Evidence:</strong> The Brady disclosure duty is triggered by an initial determination that the government possesses evidence “favorable” to the accused. Favorable evidence includes both exculpatory evidence, which negates guilt, and impeaching evidence. Both exculpatory and impeachment evidence are treated equally under the Brady doctrine.</p>
-                    `,
-                },
-                {
-                    id: 'ada-rights',
-                    category: 'Americans with Disabilities Act',
-                    title: 'The Americans with Disabilities Act',
-                    content: `
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">The Legislature finds and declares that it is the right of every person regardless of actual or perceived disability, gender, gender identity, gender expression, nationality, race or ethnicity, religion, sexual orientation, or association with a person or group with these actual or perceived characteristics, to be secure and protected from fear, intimidation, and physical harm caused by the activities of violent groups and individuals.</p>
-                        <p class="text-sm text-gray-700 leading-relaxed">The ADA's public accommodations provisions are contained in title III of that law ( 42 U.S.C. §§ 12181- 12189). This part of the ADA prohibits, among other things, the "failure to remove architectural barriers . . . in existing facilities . . . where such removal is readily achievable." ( 42 U.S.C. § 12182(b)(2)(A)(iv).) Intentional discrimination need not be shown to establish a violation of the ADA's access requirements.</p>
-                    `,
-                },
-                {
-                    id: 'family-code',
-                    category: 'Legal Citations & Authorities',
-                    title: 'Family Code Section 6320, subdivision (a)',
-                    content: `
-                        <p class="text-sm text-gray-700 leading-relaxed mb-4">“disturbing the peace of the other party” based on the totality of the circumstances, destroys the mental or emotional calm of the other party. This conduct may be committed... indirectly... including coercive control, that in purpose or effect unreasonably interferes with a person's free will and personal liberty.</p>
-                        <ul class="list-disc list-inside space-y-1 ml-4 text-sm text-gray-700">
-                            <li>Isolating from friends, relatives, or other sources of support.</li>
-                            <li>Depriving of basic necessities.</li>
-                            <li>Controlling, regulating, or monitoring the other party's movements, communications, daily behavior, finances, economic resources, or access to services.</li>
-                        </ul>
-                    `,
-                },
-            ];
+            // --- Gemini API Integration ---
+            const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=';
+            const apiKey = ""; // Canvas will provide this in runtime
 
-            const categories = ['All', ...new Set(articles.map(article => article.category))];
-            let activeCategory = 'All';
-
-            const categoryBar = document.getElementById('category-bar');
-            const articlesContainer = document.getElementById('articles-container');
-
-            function renderCategories() {
-                categoryBar.innerHTML = categories.map(category => `
-                    <button
-                        class="flex-shrink-0 py-2 px-4 rounded-full font-medium transition-colors duration-200
-                        ${activeCategory === category
-                            ? 'bg-blue-600 text-white'
-                            : 'text-gray-600 hover:bg-gray-200'
-                        }"
-                        data-category="${category}"
-                    >
-                        ${category}
-                    </button>
-                `).join('');
-
-                document.querySelectorAll('#category-bar button').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        activeCategory = e.target.dataset.category;
-                        renderCategories();
-                        renderArticles();
-                    });
-                });
-            }
-
-            function renderArticles() {
-                const filteredArticles = activeCategory === 'All'
-                    ? articles
-                    : articles.filter(article => article.category === activeCategory);
+            // Helper function to add a message bubble to the chat
+            function addMessage(text, isUser = false) {
+                const messageBubble = document.createElement('div');
+                messageBubble.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
                 
-                if (filteredArticles.length === 0) {
-                    articlesContainer.innerHTML = `
-                        <div class="col-span-full text-center py-10 text-gray-500">
-                            No articles found for this category.
-                        </div>
-                    `;
-                    return;
-                }
-
-                articlesContainer.innerHTML = filteredArticles.map(article => `
-                    <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between
-                                 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-                        <div>
-                            <span class="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-2 block">
-                                ${article.category}
-                            </span>
-                            <h2 class="text-xl font-bold text-gray-800 mb-3">${article.title}</h2>
-                            <div class="text-gray-700">
-                                ${article.content}
-                            </div>
-                        </div>
+                // Use different styles for user and AI bubbles
+                const bubbleClass = isUser ? 'chat-bubble-end text-white' : 'chat-bubble-start text-gray-200';
+                
+                messageBubble.innerHTML = `
+                    <div class="${bubbleClass} p-3 rounded-xl max-w-[75%]">
+                        <p>${text}</p>
                     </div>
-                `).join('');
+                `;
+                chatBox.appendChild(messageBubble);
+                chatBox.scrollTop = chatBox.scrollHeight;
             }
 
-            // Initial render
-            renderCategories();
-            renderArticles();
+            // Function to show a loading indicator
+            function showLoading() {
+                const loadingBubble = document.createElement('div');
+                loadingBubble.id = 'loading-bubble';
+                loadingBubble.className = 'flex justify-start';
+                loadingBubble.innerHTML = `
+                    <div class="chat-bubble-start text-gray-200 p-3 rounded-xl max-w-[75%]">
+                        <p class="loading-dots"><span>.</span><span>.</span><span>.</span></p>
+                    </div>
+                `;
+                chatBox.appendChild(loadingBubble);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            // Function to remove the loading indicator
+            function removeLoading() {
+                const loadingBubble = document.getElementById('loading-bubble');
+                if (loadingBubble) {
+                    loadingBubble.remove();
+                }
+            }
+
+            // Function to enable/disable buttons during API calls
+            function setButtonsEnabled(enabled) {
+                messageInput.disabled = !enabled;
+                thinkButton.disabled = !enabled;
+                deepSearchButton.disabled = !enabled;
+                plusButton.disabled = !enabled;
+                micButton.disabled = !enabled;
+                downloadButton.disabled = !enabled;
+                promptSuggestions.forEach(btn => btn.disabled = !enabled);
+            }
+
+            // --- "Think" (AI-only) functionality ---
+            async function getGeminiResponse(prompt) {
+                setButtonsEnabled(false);
+                showLoading();
+
+                try {
+                    const payload = {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: {
+                            parts: [{ text: "You are a friendly, space-themed AI assistant for a chat app called 'Cosmic Chat'. Respond in a creative and cosmic tone. Use space-related analogies and vocabulary where appropriate." }]
+                        },
+                    };
+                    
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    // Check for a non-200 response
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`API Error: ${response.status} - ${errorText}`);
+                        addMessage(`My communication with the stars is down. Status code: ${response.status}`, false);
+                        return;
+                    }
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                        const aiText = result.candidates[0].content.parts[0].text;
+                        addMessage(aiText);
+                    } else {
+                        addMessage("Apologies, my circuits are experiencing cosmic static. Please try again.", false);
+                    }
+                } catch (error) {
+                    console.error("Error fetching Gemini API response:", error);
+                    addMessage("Houston, we have a problem. My communication with the stars is down.", false);
+                } finally {
+                    removeLoading();
+                    setButtonsEnabled(true);
+                }
+            }
+
+            // --- "DeepSearch" (Grounded) functionality ---
+            async function getGroundedResponse(prompt) {
+                setButtonsEnabled(false);
+                showLoading();
+
+                try {
+                    const payload = {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        tools: [{ "google_search": {} }],
+                        systemInstruction: {
+                            parts: [{ text: "You are an all-knowing, all-seeing AI assistant. Provide a concise summary based on your search results. If no information is found, state that directly." }]
+                        }
+                    };
+
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    // Check for a non-200 response
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`API Error: ${response.status} - ${errorText}`);
+                        addMessage(`Deep search failed. Status code: ${response.status}`, false);
+                        return;
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                        let aiText = result.candidates[0].content.parts[0].text;
+                        const groundingMetadata = result.candidates[0].groundingMetadata;
+
+                        if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                            const sources = groundingMetadata.groundingAttributions
+                                .map(attribution => ({
+                                    uri: attribution.web?.uri,
+                                    title: attribution.web?.title,
+                                }))
+                                .filter(source => source.uri && source.title);
+                            
+                            if (sources.length > 0) {
+                                aiText += "\n\n**Sources:**\n";
+                                sources.forEach((source, index) => {
+                                    aiText += `${index + 1}. [${source.title}](${source.uri})\n`;
+                                });
+                            }
+                        }
+                        addMessage(aiText);
+                    } else {
+                        addMessage("My search telescopes came up empty. I could not find information on that topic.", false);
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching Gemini API response with search:", error);
+                    addMessage("Deep search failed. It seems a cosmic anomaly is blocking my signals.", false);
+                } finally {
+                    removeLoading();
+                    setButtonsEnabled(true);
+                }
+            }
+            
+            // --- Event Listeners and Initial Setup ---
+
+            // Function to generate stars
+            function createStars() {
+                const numStars = 200;
+                for (let i = 0; i < numStars; i++) {
+                    const star = document.createElement('div');
+                    star.className = `star ${['star-sm', 'star-md', 'star-lg'][Math.floor(Math.random() * 3)]}`;
+                    star.style.top = `${Math.random() * 100}vh`;
+                    star.style.left = `${Math.random() * 100}vw`;
+                    star.style.animationDelay = `${Math.random() * 5}s`;
+                    starsContainer.appendChild(star);
+                }
+            }
+            createStars(); // Generate stars on page load
+
+            // Handle user message submission
+            const handleUserMessage = (apiFunction) => {
+                const messageText = messageInput.value.trim();
+                if (messageText === '') return;
+                
+                addMessage(messageText, true);
+                messageInput.value = '';
+                apiFunction(messageText);
+            };
+
+            // Event listener for Enter key in message input
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleUserMessage(getGeminiResponse); // Default to "Think"
+                }
+            });
+
+            // "Think" button click handler
+            thinkButton.addEventListener('click', () => {
+                handleUserMessage(getGeminiResponse);
+            });
+
+            // "Deep Search" button click handler
+            deepSearchButton.addEventListener('click', () => {
+                handleUserMessage(getGroundedResponse);
+            });
+
+            // Prompt suggestions click handler
+            promptSuggestions.forEach(button => {
+                button.addEventListener('click', () => {
+                    messageInput.value = button.textContent.trim();
+                    messageInput.focus();
+                });
+            });
+
+            // File upload modal listeners
+            plusButton.addEventListener('click', () => {
+                fileModal.classList.remove('hidden');
+            });
+            closeModal.addEventListener('click', () => {
+                fileModal.classList.add('hidden');
+            });
+            fileModal.addEventListener('click', (e) => {
+                if (e.target === fileModal) {
+                    fileModal.classList.add('hidden');
+                }
+            });
+
+            // Microphone button (placeholder)
+            micButton.addEventListener('click', () => {
+                // Using alert() is discouraged; a custom modal or message box should be used in a real app.
+                alert('Microphone functionality would be implemented here.');
+            });
+
+            // Download button (new functionality)
+            downloadButton.addEventListener('click', async () => {
+                // Show a loading message or disable the button to indicate action
+                downloadButton.disabled = true;
+                downloadButton.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i>';
+
+                const zip = new JSZip();
+                
+                // Get the entire HTML content of the page
+                const htmlContent = document.documentElement.outerHTML;
+
+                // Create a basic README.md with setup instructions for GitHub
+                const readmeContent = `# Cosmic Chat Project
+
+## A simple chat interface mockup with a futuristic, cosmic theme.
+
+### Getting Started with GitHub
+
+To push this project to your own GitHub repository, follow these steps:
+
+1.  **Download and Unzip:** Click the download button to get the \`cosmic-chat.zip\` file and extract its contents to a folder on your computer.
+2.  **Open a Terminal:** Navigate to the project folder using your command line or terminal.
+3.  **Initialize Git:** Run the following command to initialize a local Git repository:
+    \`\`\`bash
+    git init
+    \`\`\`
+4.  **Add all Files:** Add all the project files to the staging area:
+    \`\`\`bash
+    git add .
+    \`\`\`
+5.  **Commit Changes:** Commit the files to your local repository with a message:
+    \`\`\`bash
+    git commit -m "Initial commit of Cosmic Chat"
+    \`\`\`
+6.  **Create a Remote Repository:** Go to [github.com](https://github.com) and create a **new, empty repository**. Do not initialize it with a README.
+7.  **Connect Local to Remote:** Copy the remote repository URL from GitHub and run the following command in your terminal, replacing the URL with your own:
+    \`\`\`bash
+    git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
+    \`\`\`
+8.  **Push to GitHub:** Push your local code to the remote repository:
+    \`\`\`bash
+    git push -u origin main
+    \`\`\`
+
+Your project is now live on GitHub!
+
+### Further Development
+
+This project is ready for further development. You can expand on its features, such as:
+* Integrating a real-time chat backend (e.g., Firebase, WebSocket).
+* Creating a multi-page application with a routing library.
+* Adding user authentication.
+`;
+                
+                // Add the main HTML file and the README to the zip
+                zip.file("index.html", htmlContent);
+                zip.file("README.md", readmeContent);
+                
+                // Generate the zip file and trigger the download
+                try {
+                    const blob = await zip.generateAsync({ type: "blob" });
+                    saveAs(blob, "cosmic-chat.zip");
+                } catch (error) {
+                    console.error("Failed to generate zip file:", error);
+                    alert("An error occurred while preparing the download. Please try again.");
+                } finally {
+                    // Re-enable the button and restore the icon
+                    downloadButton.disabled = false;
+                    downloadButton.innerHTML = '<i class="fas fa-download"></i>';
+                }
+            });
+
+            // Initial UI state
+            setButtonsEnabled(true);
+
+            // Toggle history panel
+            menuButton.addEventListener('click', () => {
+                historyPanel.classList.toggle('open');
+            });
         });
     </script>
-
 </body>
 </html>
